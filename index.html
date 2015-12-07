@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Mieten In Karlsruhe</title>
+        <link rel="stylesheet" href="Leaflet-0.7.3/leaflet.css"/>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+        <meta name="viewport" content="initial-scale=1,width=device-width">
+        <link rel="stylesheet" href="style.css"/>
+
+        <script src="jquery-1.11.2.min.js"></script>
+        <script>
+            // Force canvas display, much faster when displaying a lot of
+            // circle markers. See
+            // http://leafletjs.com/reference.html#path-canvas
+            var L_PREFER_CANVAS = true;
+        </script>
+        <script src="Leaflet-0.7.3/leaflet.js"></script>
+
+        <script src="colormap.js"></script>
+
+        <script>
+            var TILES_URL = 'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
+            var INITIAL_LOCATION = [49.0140679, 8.4044366];
+            var INITIAL_ZOOM = 13;
+            var ATTRIBUTION = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> ' +
+                              'contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">' +
+                              'CC-BY-SA</a>. Tiles &copy; <a href="http://cartodb.com/attributions">' +
+                              'CartoDB</a>';
+
+            var OVERLAY_URL = 'http://karlsruhe.codefor.de/mieten/heatmap.png';
+            var OVERLAY_BOUNDS = [[48.92, 8.28], [49.08, 8.53]];
+            var OVERLAY_OPTIONS = {opacity: 0.75};
+
+            var CIRCLE_RADIUS = 30;
+            var CIRCLE_OPTIONS = {stroke: false, fillOpacity: 1};
+
+            var RENT_URL = "//karlsruhe.codefor.de/mieten/mieten.json";
+            var MIN_RENT = 5;
+            var MAX_RENT = 30;
+            var RENT_SPAN = MAX_RENT - MIN_RENT;
+
+            var map;
+
+            function drawMarkers(json) {
+                for (var index in json) {
+                    var point = json[index];
+                    var fillColor = colormap((point[2] - MIN_RENT) / RENT_SPAN);
+                    var options = $.extend({'fillColor': fillColor}, CIRCLE_OPTIONS);
+                    var marker = L.circle([point[0], point[1]], CIRCLE_RADIUS,
+                                          options);
+                    marker.addTo(map);
+                }
+            }
+
+            function initMap() {
+                var tiles = new L.TileLayer(TILES_URL, {attribution: ATTRIBUTION});
+                map = new L.Map('map')
+                    .addLayer(tiles)
+                    .setView(INITIAL_LOCATION, INITIAL_ZOOM);
+                L.imageOverlay(OVERLAY_URL, OVERLAY_BOUNDS, OVERLAY_OPTIONS)
+                    .addTo(map);
+                $.getJSON(RENT_URL, drawMarkers);
+            }
+
+            $(document).ready(initMap);
+        </script>
+    </head>
+    <body>
+        <div id="map"></div>
+    </body>
+</html>
+
