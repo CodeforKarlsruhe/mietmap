@@ -2,13 +2,15 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Mieten In Karlsruhe</title>
-        <link rel="stylesheet" href="Leaflet-0.7.3/leaflet.css"/>
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+        <title>Mietpreise In Karlsruhe</title>
         <meta name="viewport" content="initial-scale=1,width=device-width">
+
+        <link rel="stylesheet" href="Leaflet-0.7.3/leaflet.css"/>
+        <link rel="stylesheet" href="Leaflet.label/leaflet.label.css"/>
         <link rel="stylesheet" href="style.css"/>
 
         <script src="jquery-1.11.2.min.js"></script>
+
         <script>
             // Force canvas display, much faster when displaying a lot of
             // circle markers. See
@@ -16,6 +18,7 @@
             var L_PREFER_CANVAS = true;
         </script>
         <script src="Leaflet-0.7.3/leaflet.js"></script>
+        <script src="Leaflet.label/leaflet.label.js"></script>
 
         <script src="colormap.js"></script>
 
@@ -32,25 +35,44 @@
             var OVERLAY_BOUNDS = [[48.92, 8.28], [49.08, 8.53]];
             var OVERLAY_OPTIONS = {opacity: 0.75};
 
-            var CIRCLE_RADIUS = 30;
+            var CIRCLE_RADIUS = 3;
             var CIRCLE_OPTIONS = {stroke: false, fillOpacity: 1};
 
             var RENT_URL = "//karlsruhe.codefor.de/mieten/mieten.json";
             var MIN_RENT = 5;
-            var MAX_RENT = 30;
+            var MAX_RENT = 20;
             var RENT_SPAN = MAX_RENT - MIN_RENT;
 
             var map;
 
-            function drawMarkers(json) {
+            function addMarkers(json) {
                 for (var index in json) {
                     var point = json[index];
+                    if (point[2] < MIN_RENT || point[2] > MAX_RENT) {
+                        continue;
+                    }
+                    console.log(point[2]);
                     var fillColor = colormap((point[2] - MIN_RENT) / RENT_SPAN);
                     var options = $.extend({'fillColor': fillColor}, CIRCLE_OPTIONS);
-                    var marker = L.circle([point[0], point[1]], CIRCLE_RADIUS,
-                                          options);
-                    marker.addTo(map);
+                    var label = (point[2] + ' €/m²').replace(/\./, ',')
+                    L.circleMarker([point[0], point[1]], options)
+                        .setRadius(CIRCLE_RADIUS)
+                        .bindLabel(label)
+                        .addTo(map);
                 }
+            }
+
+            function drawOverlay() {
+                L.imageOverlay(OVERLAY_URL, OVERLAY_BOUNDS, OVERLAY_OPTIONS)
+                    .addTo(map);
+            }
+
+            function initLegend() {
+                var legend = L.control({position: 'bottomright'});
+                legend.onAdd = function (m) {
+                    return L.DomUtil.get('legend');
+                };
+                legend.addTo(map);
             }
 
             function initMap() {
@@ -58,9 +80,9 @@
                 map = new L.Map('map')
                     .addLayer(tiles)
                     .setView(INITIAL_LOCATION, INITIAL_ZOOM);
-                L.imageOverlay(OVERLAY_URL, OVERLAY_BOUNDS, OVERLAY_OPTIONS)
-                    .addTo(map);
-                $.getJSON(RENT_URL, drawMarkers);
+                initLegend();
+                drawOverlay();
+                $.getJSON(RENT_URL, addMarkers);
             }
 
             $(document).ready(initMap);
@@ -68,6 +90,12 @@
     </head>
     <body>
         <div id="map"></div>
+        <div id="legend">
+            <h1>Mietpreise in Karlsruhe</h1>
+            <p>Ein Projekt des <a href="http://codefor.de/karlsruhe">Open Knowledge Lab Karlsruhe</a>, basierend auf Anzeigen von <a href="https://www.immobilienscout24.de">ImmobilienScout24</a>.</p>
+            <p>Rohdaten: <a href="http://karlsruhe.codefor.de/mieten/mieten.json">JSON</a>.</p>
+            <p>Quellcode: <a href="https://github.com/CodeforKarlsruhe/mietmap-scraper">Scraper</a>, <a href="https://github.com/CodeforKarlsruhe/mietmap-overlay">Heatmap</a>, <a href="https://github.com/CodeforKarlsruhe/mietmap">Karte</a>.</p>
+        </div>
     </body>
 </html>
 
