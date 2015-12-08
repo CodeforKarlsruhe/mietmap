@@ -51,7 +51,6 @@
                     if (point[2] < MIN_RENT || point[2] > MAX_RENT) {
                         continue;
                     }
-                    console.log(point[2]);
                     var fillColor = colormap((point[2] - MIN_RENT) / RENT_SPAN);
                     var options = $.extend({'fillColor': fillColor}, CIRCLE_OPTIONS);
                     var label = (point[2] + ' €/m²').replace(/\./, ',')
@@ -67,12 +66,20 @@
                     .addTo(map);
             }
 
+            function initColorbar() {
+                var gradient = colormap_gradient('to right');
+                $('#colorbar').css('background', gradient);
+                $('#min-rent').html(MIN_RENT + ' €/m²');
+                $('#max-rent').html(MAX_RENT + ' €/m²');
+            }
+
             function initLegend() {
                 var legend = L.control({position: 'bottomright'});
                 legend.onAdd = function (m) {
                     return L.DomUtil.get('legend');
                 };
                 legend.addTo(map);
+                initColorbar();
             }
 
             function initMap() {
@@ -92,7 +99,11 @@
         <div id="map"></div>
         <div id="legend">
             <h1>Mietpreise in Karlsruhe</h1>
-            <p>Ein Projekt des <a href="http://codefor.de/karlsruhe">Open Knowledge Lab Karlsruhe</a>, basierend auf Anzeigen von <a href="https://www.immobilienscout24.de">ImmobilienScout24</a>.</p>
+            <div id="scale">
+                <div id="colorbar"></div>
+                <span id="min-rent"></span><span id="max-rent"></span>
+            </div>
+            <p>Ein Projekt des <a href="http://codefor.de/karlsruhe">Open Knowledge Lab Karlsruhe</a>, basierend auf den Kaltmieten aus Anzeigen von <a href="https://www.immobilienscout24.de">ImmobilienScout24</a>.</p>
             <p>Rohdaten: <a href="http://karlsruhe.codefor.de/mieten/mieten.json">JSON</a>.</p>
             <p>Quellcode: <a href="https://github.com/CodeforKarlsruhe/mietmap-scraper">Scraper</a>, <a href="https://github.com/CodeforKarlsruhe/mietmap-overlay">Heatmap</a>, <a href="https://github.com/CodeforKarlsruhe/mietmap">Karte</a>.</p>
         </div>

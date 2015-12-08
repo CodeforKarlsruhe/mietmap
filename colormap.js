@@ -31,7 +31,7 @@ function componentToHex(c) {
 /*
    Compute color for a value.
 
-   Based on the data in from COLORMAP.
+   Based on the data from COLORMAP.
 
    Returns a color hex string.
 */
@@ -56,5 +56,26 @@ function colormap(v) {
     return ('#' + componentToHex(rgb[0])
                 + componentToHex(rgb[1])
                 + componentToHex(rgb[2]));
+}
+
+
+/*
+    CSS gradient from colormap.
+
+    Based on the data from COLORMAP.
+
+    `direction` is the gradient direction (e.g. "to right").
+
+    Returns a CSS gradient definition string.
+*/
+function colormap_gradient(direction) {
+    var g = 'linear-gradient(' + direction;
+    for (var i = 0; i < COLORMAP.length; i++) {
+        var c = COLORMAP[i];
+        g += ',rgb(' + Math.round(255 * c[0]) + ','
+                     + Math.round(255 * c[1]) + ','
+                     + Math.round(255 * c[2]) + ')';
+    }
+    return g + ')';
 }
 
