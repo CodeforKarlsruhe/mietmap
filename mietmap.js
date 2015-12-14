@@ -37,8 +37,6 @@ function mergeDataPoints(points) {
     return result;
 }
 
-var RENT_SPAN = MAX_RENT - MIN_RENT;
-
 /*
     Add circle markers to map.
 */
@@ -76,9 +74,11 @@ function initMap() {
             center: INITIAL_LOCATION,
             zoom: INITIAL_ZOOM,
             maxZoom: MAX_ZOOM,
-            minZoom: MIN_ZOOM
+            minZoom: MIN_ZOOM,
+            zoomControl: false
         })
-        .addLayer(tiles)
+        .addLayer(tiles);
+    L.Control.zoomHome().addTo(map);
     addOverlay();
     $.getJSON(RENT_URL, addMarkers);
 }

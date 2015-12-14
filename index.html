@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="Leaflet-0.7.3/leaflet.css"/>
         <link rel="stylesheet" href="Leaflet.label/leaflet.label.css"/>
         <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="Leaflet.zoomhome/leaflet.zoomhome.css"/>
 
         <script src="jquery-1.11.2.min.js"></script>
 
@@ -19,6 +21,7 @@
         </script>
         <script src="Leaflet-0.7.3/leaflet.js"></script>
         <script src="Leaflet.label/leaflet.label.js"></script>
+        <script src="Leaflet.zoomhome/leaflet.zoomhome.min.js"></script>
 
         <script src="colormap.js"></script>
         <script src="mietmap.js"></script>
@@ -44,6 +47,7 @@
             var RENT_URL = "//karlsruhe.codefor.de/mieten/mieten.json";
             var MIN_RENT = 5;
             var MAX_RENT = 20;
+            var RENT_SPAN = MAX_RENT - MIN_RENT;
 
             $(document).ready(function() {
                 initMap();
