@@ -26,6 +26,8 @@
             var TILES_URL = 'http://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
             var INITIAL_LOCATION = [49.0140679, 8.4044366];
             var INITIAL_ZOOM = 13;
+            var MAX_ZOOM = 16;
+            var MIN_ZOOM = 11;
             var ATTRIBUTION = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> ' +
                               'contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">' +
                               'CC-BY-SA</a>. Tiles &copy; <a href="http://cartodb.com/attributions">' +
@@ -124,9 +126,13 @@
 
             function initMap() {
                 var tiles = new L.TileLayer(TILES_URL, {attribution: ATTRIBUTION});
-                map = new L.Map('map')
+                map = new L.Map('map', {
+                        center: INITIAL_LOCATION,
+                        zoom: INITIAL_ZOOM,
+                        maxZoom: MAX_ZOOM,
+                        minZoom: MIN_ZOOM
+                    })
                     .addLayer(tiles)
-                    .setView(INITIAL_LOCATION, INITIAL_ZOOM);
                 initLegend();
                 drawOverlay();
                 $.getJSON(RENT_URL, addMarkers);
